@@ -29,6 +29,14 @@
   ],
   "author": "smitdev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smitcode/ai-skills.git"
+  },
+  "homepage": "https://github.com/smitcode/ai-skills#readme",
+  "bugs": {
+    "url": "https://github.com/smitcode/ai-skills/issues"
+  },
   "engines": {
     "node": ">=18"
   },
