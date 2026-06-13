@@ -1,0 +1,38 @@
+{
+  "name": "@smitdev/ai-skills",
+  "version": "0.1.0",
+  "description": "Install reusable AI assistant skills (Claude Code, GitHub Copilot, Cursor, Windsurf) with one command.",
+  "bin": {
+    "ai-skills": "bin/cli.js"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "skills/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "copilot",
+    "cursor",
+    "windsurf",
+    "ai",
+    "skills",
+    "agent",
+    "prompt"
+  ],
+  "author": "smitdev",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
