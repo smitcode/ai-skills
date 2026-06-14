@@ -14,7 +14,8 @@ No global install needed — run it with `npx`:
 # See what's available
 npx @smitdev/ai-skills list
 
-# Interactive: pick assistant(s) and skill(s)
+# Interactive: pick assistant(s) and skill(s) with the keyboard
+#   ↑/↓ move · space or tab toggle · a select all · enter confirm
 npx @smitdev/ai-skills install
 
 # Non-interactive examples

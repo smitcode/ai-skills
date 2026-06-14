@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 
-const readline = require('readline');
 const path = require('path');
 const { listSkills } = require('../lib/skills');
 const { adapters } = require('../lib/adapters');
 const { install } = require('../lib/install');
+const { multiselect, select } = require('../lib/prompt');
 
 const ASSISTANT_IDS = Object.keys(adapters);
 
@@ -31,10 +31,6 @@ function parseArgs(argv) {
   return args;
 }
 
-function ask(rl, question) {
-  return new Promise((resolve) => rl.question(question, (a) => resolve(a.trim())));
-}
-
 function parseList(val, valid) {
   if (val === true || !val) return [];
   const items = String(val)
@@ -55,6 +51,8 @@ Usage:
 Commands:
   list                 List the skills bundled in this package
   install              Install skills for one or more assistants
+                       (run with no flags for an interactive picker:
+                        ↑/↓ move · space/tab toggle · a all · enter confirm)
 
 Options for "install":
   --assistant <ids>    Comma-separated: ${ASSISTANT_IDS.join(', ')} (or "all")
@@ -73,20 +71,6 @@ Examples:
 `);
 }
 
-async function pickFromList(rl, label, options) {
-  console.log(`\n${label}`);
-  options.forEach((o, i) => console.log(`  ${i + 1}. ${o.label}`));
-  console.log(`  (comma-separated numbers, or "a" for all)`);
-  const ans = await ask(rl, '> ');
-  if (ans.toLowerCase() === 'a' || ans === '') return options.map((o) => o.id);
-  const picked = ans
-    .split(',')
-    .map((s) => parseInt(s.trim(), 10))
-    .filter((n) => n >= 1 && n <= options.length)
-    .map((n) => options[n - 1].id);
-  return [...new Set(picked)];
-}
-
 async function runInstall(args) {
   const skills = listSkills();
   if (skills.length === 0) {
@@ -98,31 +82,43 @@ async function runInstall(args) {
     typeof args.flags.dir === 'string' ? args.flags.dir : process.cwd()
   );
   const dryRun = !!args.flags['dry-run'];
-  const scope = args.flags.global ? 'global' : 'project';
+  const scopeFlagged = !!args.flags.global || !!args.flags.project;
+  let scope = args.flags.global ? 'global' : 'project';
 
   let assistants = parseList(args.flags.assistant, ASSISTANT_IDS);
   let skillNames = parseList(args.flags.skill, skills.map((s) => s.name));
 
-  const nonInteractive =
-    args.flags.yes || (assistants.length > 0);
+  const nonInteractive = args.flags.yes || assistants.length > 0;
 
   if (!nonInteractive && process.stdin.isTTY) {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     if (assistants.length === 0) {
-      assistants = await pickFromList(
-        rl,
-        'Which assistant(s)?',
-        ASSISTANT_IDS.map((id) => ({ id, label: adapters[id].label }))
-      );
+      assistants = await multiselect({
+        title: 'Which assistant(s)? (Claude Code, Copilot, Cursor, Windsurf)',
+        options: ASSISTANT_IDS.map((id) => ({ id, label: adapters[id].label })),
+        initial: ['claude'],
+      });
     }
     if (skillNames.length === 0) {
-      skillNames = await pickFromList(
-        rl,
-        'Which skill(s)?',
-        skills.map((s) => ({ id: s.name, label: `${s.name} — ${truncate(s.description, 60)}` }))
-      );
+      skillNames = await multiselect({
+        title: 'Which skill(s)?',
+        options: skills.map((s) => ({
+          id: s.name,
+          label: `${s.name} — ${truncate(s.description, 60)}`,
+        })),
+        initial: skills.map((s) => s.name),
+      });
     }
-    rl.close();
+    // Only Claude Code supports a global scope; ask when relevant.
+    if (!scopeFlagged && assistants.includes('claude')) {
+      scope = await select({
+        title: 'Install scope for Claude Code?',
+        options: [
+          { id: 'project', label: 'This project  (./.claude/skills)' },
+          { id: 'global', label: 'Global         (~/.claude/skills, available everywhere)' },
+        ],
+        initial: 'project',
+      });
+    }
   }
 
   if (assistants.length === 0) assistants = ASSISTANT_IDS.slice();
