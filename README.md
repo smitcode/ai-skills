@@ -43,6 +43,11 @@ Use `--dry-run` to preview without writing anything.
 
 - **contract** — Create a build-ready spec / PRD for a feature before any code
   is written, so a coding assistant can build it without guessing.
+- **understand** — Read a whole codebase and write a connected set of
+  plain-language docs (a map plus one doc per aspect) to onboard fast.
+- **gistly** — Answer a question so it's correct, dense, and easy to hold in
+  your head: the answer first, the mental model that makes it stick, fewest
+  tokens it honestly needs.
 
 ## Authoring your own skills
 
