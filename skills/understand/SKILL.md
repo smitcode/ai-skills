@@ -1,6 +1,6 @@
 ---
 name: understand
-description: Read a whole codebase and write a set of plain-language docs that explain it - one overview/map doc plus one doc per aspect (UI, styles, API, models, data, testing, features, services, and so on). Use this when someone wants to understand a project as a whole or get onboarded to a repo - things like "help me understand this codebase", "document this repo", "explain how this project is structured", "map out the code", "onboard me to this project", or "I just joined and need to learn this code". This is for the WHOLE codebase. To explain one single feature in depth, use the feature-explainer skill instead.
+description: Read a whole codebase and write a set of plain-language docs that explain it - one overview/map doc plus one doc per aspect (UI, styles, API, models, data, testing, features, services, and so on). Use this when someone wants to understand a project as a whole or get onboarded to a repo - things like "help me understand this codebase", "document this repo", "explain how this project is structured", "map out the code", "onboard me to this project", or "I just joined and need to learn this code". This is for the WHOLE codebase. It can also explain one single feature in depth on request - things like "explain how login works", "walk me through the checkout flow", "how does feature X work" - but only after confirming with the user first (see "Explaining a single feature on request").
 ---
 
 # Understanding
@@ -123,6 +123,51 @@ The first file or two to open to understand this aspect.
 Put all the docs in one folder so they're a set. Reuse the project's docs folder if there is one - look for `docs/`, then use `docs/codebase/`. If there's no docs folder, create `codebase-map/`.
 
 Name the files simply: the map is `overview.md`, and each aspect is its lowercase name (`api.md`, `ui.md`, `data.md`, ...). Tell the user the folder path and the list of files when you're done.
+
+## Explaining a single feature on request
+
+Sometimes the user doesn't want the whole codebase mapped - they want one feature explained in depth (e.g. "explain how login works", "walk me through the checkout flow", "how does search work"). This skill can do that too, but it's a different job from the full map, so **always confirm before starting**.
+
+When a request looks like a single-feature explanation:
+
+1. **Confirm first.** Don't dive in. Ask the user something like: "Do you want me to explain just the `<feature>` feature in depth, or map the whole codebase? And should I write it to a doc file or just explain it here in the chat?" Wait for their answer before doing the work. Only proceed once they've confirmed the scope (one feature vs. whole repo) and the output (a file vs. inline).
+
+2. **Trace the feature, not the repo.** Once confirmed, follow the one feature end to end instead of surveying everything. Find its entry point (the button, route, command, or event that kicks it off) and follow it through the layers - UI -> API -> services -> data and back. Read only the files on that path.
+
+3. **Write the explanation** using this shape:
+
+```markdown
+# Feature: <feature name>
+
+## What it does
+
+One short paragraph in plain words - what this feature is, from the user's point of view.
+
+## How it's triggered
+
+Where it starts - the button, route, command, or event that kicks it off, with the real file path.
+
+## How it flows end to end
+
+Follow the feature step by step through the layers (UI -> API -> service -> data
+-> back). This is the core of the doc. A numbered list or a small diagram works well.
+Point to the real file (and function) at each step.
+
+## The main pieces
+
+The key files/functions involved and what each one contributes. Just the ones on this
+feature's path, not the whole repo.
+
+## Edge cases and gotchas
+
+Error handling, validation, special states, and the non-obvious bits someone would miss.
+
+## Where to start reading
+
+The first file or two to open to follow this feature.
+```
+
+4. **Output where they asked.** If they wanted a file, save it in the same docs folder the full maps use (see "Where to save the docs") as `feature-<name>.md`. If they wanted it inline, just explain it in the chat. Either way, follow the same rules below - real file paths, no invention.
 
 ## Rules to keep in mind
 
